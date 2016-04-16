@@ -100,6 +100,9 @@
         "name": "deploymentLoop",
         "count": "[parameters('numberOfSAs')]"
       },
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', (parameters('uniquePrefix'), padLeft(copyindex(), 2, '0'), 'sa')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -112,7 +115,7 @@
           "ImagePublisher": { "value": "[variables('ImagePublisher')]" }, 
           "ImageOffer": { "value": "[variables('ImageOffer')]" }, 
           "ImageSKU": { "value": "[variables('ImageSKU')]" }, 
-          "baseVHDURI": { "value": "[concat(parameters('uniquePrefix'), copyIndex(1), 'sa.blob.core.windows.net/vhds/')]" },
+          "baseVHDURI": { "value": "[concat('http://' parameters('uniquePrefix'), padLeft(copyindex(), 2, '0'), 'sa.blob.core.windows.net/vhds/')]" },
           "instanceCountPerSA": { "value": "[parameters('instanceCountPerSA')]" },
           "vmSize": { "value": "[parameters('vmSize')]" },
           "vnetName": { "value": "[parameters('vnetName')]" },
