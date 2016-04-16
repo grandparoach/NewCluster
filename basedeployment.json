@@ -8,6 +8,15 @@
     "clusterName": {
       "type": "string"
     },
+    "ImagePublisher": { 
+      "type": "string"
+    },
+    "ImageSKU": { 
+      "type": "string"
+    },
+    "OSVersion": { 
+      "type": "string"
+    },      
     "baseVHDURI": {
       "type": "string"
     },
@@ -21,10 +30,7 @@
       "type": "string"
     },
     "vnetResourceGroup": {
-      "type": "string",
-      "metadata": {
-        "description": "Resource Group VNET is deployed in"
-      }
+      "type": "string"
     },
     "subnetName": {
       "type": "string"
@@ -46,8 +52,30 @@
     },
     "adminPassword": {
       "type": "securestring"
+    },
+    "sshPublicKey": {
+        "type": "string"
+    },
+    "authenticationType": {
+        "type": "string"
     }
-  }
+  },
+  "variables": {
+    "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
+    "linuxConfiguration_sshPublicKey": {
+        "disablePasswordAuthentication": "true",
+        "ssh": {
+            "publicKeys": [
+                {
+                    "path": "[variables('sshKeyPath')]",
+                    "keyData": "[parameters('sshPublicKey')]"
+                }
+            ]
+        }
+    },
+    "linuxConfiguration_password": { },
+    "linuxConfiguration": "[variables(concat('linuxConfiguration_',parameters('authenticationType')))]"  
+  },
   "resources": [
     {
       "apiVersion": "2015-05-01-preview",
@@ -114,17 +142,21 @@
         "osProfile": {
           "computername": "[concat('vm', parameters('clusterName'), padLeft(copyIndex(), 2, '0'))]",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "linuxConfiguration": "[variables('linuxConfiguration')]"
         },
         "storageProfile": {
+          "imageReference": {
+              "publisher": "[parameters('imagePublisher')]",
+              "offer": "[parameters('imageOffer')]",
+              "sku": "[parameters('imageSKU')]",
+              "version": "latest"
+          },
           "osDisk": {
             "name": "[concat(parameters('clusterName'),'-osDisk')]",
             "osType": "Linux",
             "caching": "ReadWrite",
             "createOption": "FromImage",
-            "image": {
-              "uri": "[parameters('sourceImageURI')]"
-            },
             "vhd": {
               "uri": "[concat(parameters('baseVHDURI'),'osdisk', parameters('clusterName'), padLeft(copyIndex(), 2, '0'), '.vhd')]"
             }
@@ -141,4 +173,3 @@
     }
   ]
 }
-
