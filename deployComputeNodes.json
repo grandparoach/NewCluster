@@ -115,7 +115,7 @@
           "ImagePublisher": { "value": "[variables('ImagePublisher')]" }, 
           "ImageOffer": { "value": "[variables('ImageOffer')]" }, 
           "ImageSKU": { "value": "[variables('ImageSKU')]" }, 
-          "baseVHDURI": { "value": "[concat('http://' parameters('uniquePrefix'), padLeft(copyindex(), 2, '0'), 'sa.blob.core.windows.net/vhds/')]" },
+          "baseVHDURI": { "value": "[concat('https://', parameters('uniquePrefix'), padLeft(copyindex(), 2, '0'), 'sa.blob.core.windows.net/vhds/')]" },
           "instanceCountPerSA": { "value": "[parameters('instanceCountPerSA')]" },
           "vmSize": { "value": "[parameters('vmSize')]" },
           "vnetName": { "value": "[parameters('vnetName')]" },
