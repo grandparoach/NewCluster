@@ -81,7 +81,7 @@
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[concat(parameters('uniquePrefix'), padLeft(copyindex(), 2, '0')), 'sa']",
+      "name": "[concat(parameters('uniquePrefix'), padLeft(copyindex(), 2, '0'), 'sa']",
       "apiVersion": "2015-06-15",
       "copy": {
         "name": "storageLoop",
