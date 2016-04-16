@@ -133,8 +133,7 @@
         "count": "[parameters('instanceCountPerSA')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', 'nic', parameters('clusterName'), padLeft(copyindex(), 2, '0'))]",
-        "[concat('Microsoft.Storage/storageAccounts/', parameters('clustername'), 'sa')]"
+        "[concat('Microsoft.Network/networkInterfaces/', 'nic', parameters('clusterName'), padLeft(copyindex(), 2, '0'))]"
       ],
       "properties": {
         "hardwareProfile": {
