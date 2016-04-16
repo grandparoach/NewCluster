@@ -8,9 +8,15 @@
     "clusterName": {
       "type": "string"
     },
-    "sourceImageURI": {
+    "ImagePublisher": { 
       "type": "string"
     },
+    "ImageOffer": { 
+      "type": "string"
+    },
+    "ImageSKU": { 
+      "type": "string"
+    },      
     "baseVHDURI": {
       "type": "string"
     },
@@ -20,17 +26,11 @@
     "vmSize": {
       "type": "string"
     },
-    "OSType": {
-      "type": "string"
-    },
     "vnetName": {
       "type": "string"
     },
     "vnetResourceGroup": {
-      "type": "string",
-      "metadata": {
-        "description": "Resource Group VNET is deployed in"
-      }
+      "type": "string"
     },
     "subnetName": {
       "type": "string"
@@ -52,10 +52,29 @@
     },
     "adminPassword": {
       "type": "securestring"
+    },
+    "sshPublicKey": {
+        "type": "string"
+    },
+    "authenticationType": {
+        "type": "string"
     }
   },
   "variables": {
-    "availabilitySetName": "[concat(parameters('uniquePrefix'), 'av')]"
+    "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
+    "linuxConfiguration_sshPublicKey": {
+        "disablePasswordAuthentication": "true",
+        "ssh": {
+            "publicKeys": [
+                {
+                    "path": "[variables('sshKeyPath')]",
+                    "keyData": "[parameters('sshPublicKey')]"
+                }
+            ]
+        }
+    },
+    "linuxConfiguration_password": { },
+    "linuxConfiguration": "[variables(concat('linuxConfiguration_',parameters('authenticationType')))]"  
   },
   "resources": [
     {
@@ -117,26 +136,27 @@
         "[concat('Microsoft.Network/networkInterfaces/', 'nic', parameters('clusterName'), padLeft(copyindex(), 2, '0'))]"
       ],
       "properties": {
-        "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
-        },
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
           "computername": "[concat('vm', parameters('clusterName'), padLeft(copyIndex(), 2, '0'))]",
           "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminPassword": "[parameters('adminPassword')]",
+          "linuxConfiguration": "[variables('linuxConfiguration')]"
         },
         "storageProfile": {
+          "imageReference": {
+              "publisher": "[parameters('ImagePublisher')]",
+              "offer": "[parameters('ImageOffer')]",
+              "sku": "[parameters('ImageSKU')]",
+              "version": "latest"
+          },
           "osDisk": {
             "name": "[concat(parameters('clusterName'),'-osDisk')]",
-            "osType": "[parameters('OSType')]",
+            "osType": "Linux",
             "caching": "ReadWrite",
             "createOption": "FromImage",
-            "image": {
-              "uri": "[parameters('sourceImageURI')]"
-            },
             "vhd": {
               "uri": "[concat(parameters('baseVHDURI'),'osdisk', parameters('clusterName'), padLeft(copyIndex(), 2, '0'), '.vhd')]"
             }
@@ -153,4 +173,3 @@
     }
   ]
 }
-
