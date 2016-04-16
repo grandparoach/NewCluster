@@ -8,9 +8,6 @@
     "clusterName": {
       "type": "string"
     },
-    "sourceImageURI": {
-      "type": "string"
-    },
     "baseVHDURI": {
       "type": "string"
     },
@@ -18,9 +15,6 @@
       "type": "int"
     },
     "vmSize": {
-      "type": "string"
-    },
-    "OSType": {
       "type": "string"
     },
     "vnetName": {
@@ -53,10 +47,7 @@
     "adminPassword": {
       "type": "securestring"
     }
-  },
-  "variables": {
-    "availabilitySetName": "[concat(parameters('uniquePrefix'), 'av')]"
-  },
+  }
   "resources": [
     {
       "apiVersion": "2015-05-01-preview",
@@ -117,9 +108,6 @@
         "[concat('Microsoft.Network/networkInterfaces/', 'nic', parameters('clusterName'), padLeft(copyindex(), 2, '0'))]"
       ],
       "properties": {
-        "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
-        },
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
@@ -131,7 +119,7 @@
         "storageProfile": {
           "osDisk": {
             "name": "[concat(parameters('clusterName'),'-osDisk')]",
-            "osType": "[parameters('OSType')]",
+            "osType": "Linux",
             "caching": "ReadWrite",
             "createOption": "FromImage",
             "image": {
