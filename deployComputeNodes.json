@@ -25,7 +25,7 @@
     },
     "vnetResourceGroup": {
       "type": "string",
-      "defaultValue": "networks"
+      "defaultValue": "noaa"
     },
     "vnetName": {
       "type": "string",
@@ -33,7 +33,7 @@
     },
     "subnetName": {
       "type": "string",
-      "defaultValue": "Subnet-1"
+      "defaultValue": "default"
     },
     "adminUsername": {
       "type": "string",
