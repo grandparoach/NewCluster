@@ -157,7 +157,7 @@
             "caching": "ReadWrite",
             "createOption": "FromImage",
             "vhd": {
-              "uri": "[concat(parameters('baseVHDURI'),'osdisk', parameters('clusterName'), padLeft(copyIndex(1), 2, '0'), '.vhd')]"
+              "uri": "[concat(parameters('baseVHDURI'), parameters('clusterName'), padLeft(copyIndex(), 2, '0'), '.vhd')]"
             }
           }
         },
