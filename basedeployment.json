@@ -11,10 +11,10 @@
     "ImagePublisher": { 
       "type": "string"
     },
-    "ImageSKU": { 
+    "ImageOffer": { 
       "type": "string"
     },
-    "OSVersion": { 
+    "ImageSKU": { 
       "type": "string"
     },      
     "baseVHDURI": {
@@ -147,9 +147,9 @@
         },
         "storageProfile": {
           "imageReference": {
-              "publisher": "[parameters('imagePublisher')]",
-              "offer": "[parameters('imageOffer')]",
-              "sku": "[parameters('imageSKU')]",
+              "publisher": "[parameters('ImagePublisher')]",
+              "offer": "[parameters('ImageOffer')]",
+              "sku": "[parameters('ImageSKU')]",
               "version": "latest"
           },
           "osDisk": {
