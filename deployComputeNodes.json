@@ -101,7 +101,7 @@
         "count": "[parameters('numberOfSAs')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', (parameters('uniquePrefix'), padLeft(copyindex(), 2, '0'), 'sa')]"
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('uniquePrefix'), padLeft(copyindex(), 2, '0'), 'sa')]"
       ],
       "properties": {
         "mode": "Incremental",
