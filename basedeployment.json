@@ -154,7 +154,6 @@
           },
           "osDisk": {
             "name": "[concat(parameters('clusterName'),'-osDisk')]",
-            "osType": "Linux",
             "caching": "ReadWrite",
             "createOption": "FromImage",
             "vhd": {
