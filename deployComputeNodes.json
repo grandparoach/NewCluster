@@ -17,7 +17,8 @@
       "defaultValue": "Standard_D14_v2",
       "allowedValues": [
         "Standard_A1",
-        "Standard_D14_v2"
+        "Standard_D14_v2",
+        "Standard_D15_v2"
       ],
       "metadata": {
         "description": "Size of the VMs to be used for actual computation."
