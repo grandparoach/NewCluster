@@ -75,9 +75,28 @@ setup_env()
     echo "export I_MPI_DYNAMIC_CONNECTION=0" >> /etc/profile.d/hpc.sh
 }
 
+install_R()
+{
+    rpm -Uvh http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    yum install -y R
+}
+
+install_PBS()
+{
+    cd /
+    tar -zxpvf /share/data/pbs_install/pbs_image.tgz 
+    service pbs start   
+    chkconfig --add pbs
+    PATH=$PATH:/opt/pbs/default/bin 
+    export PATH
+
+}
+
 install_pkgs
 setup_shares
 setup_hpc_user
+install_R
+install_PBS
 setup_env
 
 
