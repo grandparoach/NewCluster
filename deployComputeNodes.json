@@ -4,7 +4,7 @@
   "parameters": {
     "uniquePrefix": {
       "type": "string",
-      "defaultValue": "nfs2"
+      "defaultValue": "hpc"
     },
     "numberOfSAs": {
       "type": "int"
@@ -14,19 +14,14 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_A1",
-      "allowedValues": [
-        "Standard_A1",
-        "Standard_A8",
-        "Standard_A9"
-      ],
+      "defaultValue": "Standard_D14_v2",
       "metadata": {
         "description": "Size of the VMs to be used for actual computation."
       }
     },
     "OSType": {
       "type": "string",
-      "defaultValue": "Linux",
+      "defaultValue": "Windows",
       "allowedValues": [
         "Linux",
         "Windows"
@@ -43,36 +38,25 @@
       "type": "string"
     },
     "vnetName": {
-      "type": "string",
-      "defaultValue": "nfs2vnet"
+      "type": "string"
     },
     "subnetName": {
-      "type": "string",
-      "defaultValue": "subnet"
+      "type": "string"
     },
     "templateLocation": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/grandparoach/NewCluster/master/"
+      "defaultValue": "https://raw.githubusercontent.com/grandparoach/NewCluster/hpc/"
     },
     "location": {
       "type": "string",
       "defaultValue": "West US"
     },
     "adminUsername": {
-      "type": "string",
-      "defaultValue": "sroach"
+      "type": "string"
     },
     "masterHostName": {
       "type": "string",
-      "defaultValue": "transfernfs2vm"
-    },
-    "hpcUserName": {
-      "type": "string",
-      "defaultValue": "hpc"
-    },
-    "finaldeployScriptURI": {
-      "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/grandparoach/NewCluster/master/finaldeploy.sh"
+      "defaultValue": "AzureHeadNode"
     },
     "adminPassword": {
       "type": "securestring"
@@ -80,23 +64,13 @@
   },
   "variables": {
     "baseTemplateUri": "[concat(parameters('templateLocation'), 'basedeployment.json')]",
-    "availabilitySetName": "[concat(parameters('uniquePrefix'), 'av')]",
     "location": "[resourceGroup().location]"
   },
   "resources": [
     {
-      "type": "Microsoft.Compute/availabilitySets",
-      "name": "[variables('availabilitySetName')]",
-      "apiVersion": "2015-05-01-preview",
-      "location": "[parameters('location')]"
-    },
-    {
       "name": "[concat('clusterSet', copyindex())]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]"
-      ],
       "copy": {
         "name": "deploymentLoop",
         "count": "[parameters('numberOfSAs')]"
@@ -120,8 +94,6 @@
           "subnetName": { "value": "[parameters('subnetName')]" },
           "location": { "value": "[parameters('location')]" },
           "masterHostName": { "value": "[parameters('masterHostName')]" },
-          "hpcUserName": { "value": "[parameters('hpcUserName')]" },
-          "finaldeployScriptURI": { "value": "[parameters('finaldeployScriptURI')]" },
           "adminUsername": { "value": "[parameters('adminUsername')]" },
           "adminPassword": { "value": "[parameters('adminPassword')]" }
         }
