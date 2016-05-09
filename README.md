@@ -1,3 +1,2 @@
 # NewCluster
-Spin up a cluster of compute nodes with an existing NFS Server and VNet
-Leverages NFS Template
+Spin up a cluster of compute nodes with Windows HPC Pack on an Existing VNet
