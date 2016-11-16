@@ -18,7 +18,7 @@ HPC_GID=7007
 #
 install_pkgs()
 {
-    pkgs="zlib zlib-devel bzip2 bzip2-devel bzip2-libs openssl openssl-devel openssl-libs gcc gcc-c++ nfs-utils rpcbind mdadm wget"
+    pkgs="zlib zlib-devel bzip2 bzip2-devel bzip2-libs openssl openssl-devel openssl-libs gcc gcc-c++ nfs-utils rpcbind mdadm wget libX11.i686 libXext.i686 libXtst.i686 openmotif22.i686 ksh ncurses-libs.i686 compat-libf2c-34.x86_64 dos2unix"
     yum -y install $pkgs
 }
 
@@ -75,28 +75,9 @@ setup_env()
     echo "export I_MPI_DYNAMIC_CONNECTION=0" >> /etc/profile.d/hpc.sh
 }
 
-install_R()
-{
-    rpm -Uvh http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    yum install -y R
-}
-
-install_PBS()
-{
-    cd /
-    tar -zxpvf /share/data/pbs_install/pbs_image.tgz 
-    service pbs start   
-    chkconfig --add pbs
-    PATH=$PATH:/opt/pbs/default/bin 
-    export PATH
-
-}
 
 install_pkgs
 setup_shares
 setup_hpc_user
-install_R
-install_PBS
 setup_env
-
 
