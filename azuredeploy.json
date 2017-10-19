@@ -1,0 +1,292 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Base string for naming resources (max length of 8)"
+      },
+      "maxLength": 8
+    },
+    
+    "CompNodeVMsku": {
+      "type": "string",
+      "defaultValue": "Standard_H16r",
+      "allowedValues": [
+        "Standard_A8",
+        "Standard_A9",
+        "Standard_D2_v2",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2",
+        "Standard_D11_v2",
+        "Standard_D12_v2",
+        "Standard_D13_v2",
+        "Standard_D14_v2",
+        "Standard_D15_v2",
+        "Standard_DS2_v2",
+        "Standard_DS3_v2",
+        "Standard_DS4_v2",
+        "Standard_DS5_v2",
+        "Standard_DS11_v2",
+        "Standard_DS12_v2",
+        "Standard_DS13_v2",
+        "Standard_DS14_v2",
+        "Standard_DS15_v2",
+        "Standard_F4",
+        "Standard_F8",
+        "Standard_F16",
+        "Standard_F4s",
+        "Standard_F8s",
+        "Standard_F16s",
+        "Standard_H8",
+        "Standard_H16",
+        "Standard_H8m",
+        "Standard_H16m",
+        "Standard_H16r",
+        "Standard_H16mr",
+        "Standard_NC6",
+        "Standard_NC12",
+        "Standard_NC24",
+        "Standard_NC24r"
+      ],
+      "metadata": {
+        "description": "Instance type to use for the compute nodes"
+      }
+    },
+    "computeNodeImage": {
+      "type": "string",
+      "defaultValue": "CentOS-HPC_7.1",
+      "allowedValues": [
+        "CentOS_6.7",
+        "CentOS_7.2",
+        "CentOS-HPC_7.1",
+        "CentOS-HPC_7.3",
+        "RHEL_7.2"
+      ],
+      "metadata": {
+        "description": "The VM image of the compute nodes"
+      }
+    },
+    "computeNodeCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of VM instances for Compute Nodes (200 or less)."
+      },
+      "defaultValue": 60,
+      "maxValue": 100
+    },
+    "adminUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "User name for the Virtual Machine."
+      }
+    },
+    "authenticationType": {
+      "type": "string",
+      "defaultValue": "password",
+      "allowedValues": [
+        "password",
+        "sshPublicKey"
+      ],
+      "metadata": {
+        "description": "Authentication type for the virtual machines"
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Admin password for the virtual machines"
+      }
+    },
+    "sshPublicKey": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "SSH public key that will be included on all nodes. The OpenSSH public key can be generated with tools like ssh-keygen on Linux or OS X."
+      }
+    },
+    "existingVNetName": {
+      "type": "string",
+      "defaultValue": "ARMHPCVNet",
+      "metadata": {
+        "description": "name of existing Virtual Network"
+      }
+    },
+    "existingVNetResourceGroup": {
+      "type": "string",
+       "defaultValue": "ARMHPC",
+      "metadata": {
+        "description": "name of Resource Group for existing Virtual Network"
+      }
+    },
+    "existingSubnetName": {
+      "type": "string",
+      "defaultValue": "Subnet-2",
+      "metadata": {
+        "description": "name of existing Virtual Network"
+      }
+    },
+    "hpcUserName": {
+        "type": "string",
+        "defaultValue": "hpc"
+    }
+  
+  },
+  "variables": {
+    "longNamingInfix": "[toLower(parameters('vmPrefix'))]",
+    "vnetID": "[resourceId(parameters('existingVNetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('existingVNetName'))]",
+    "SubnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('existingSubnetName'))]",
+    "masterBoxName": "[concat(variables('longNamingInfix'), 'master')]",
+    "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
+    "computeImages": {
+      "CentOS_6.7": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "6.7",
+        "version": "latest"
+      },
+      "CentOS_7.2": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7.2",
+        "version": "latest"
+      },
+      "CentOS_7.3": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS",
+        "sku": "7.3",
+        "version": "latest"
+      },
+      "CentOS-HPC_7.1": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7.1",
+        "version": "latest"
+      },
+      "CentOS-HPC_7.3": {
+        "publisher": "OpenLogic",
+        "offer": "CentOS-HPC",
+        "sku": "7.3",
+        "version": "latest"
+      },
+      "RHEL_7.2": {
+        "publisher": "RedHat",
+        "offer": "RHEL",
+        "sku": "7.2",
+        "version": "latest"
+      }
+    },
+    "linuxConfiguration_sshPublicKey": {
+      "disablePasswordAuthentication": "true",
+      "ssh": {
+        "publicKeys": [
+          {
+            "path": "[variables('sshKeyPath')]",
+            "keyData": "[parameters('sshPublicKey')]"
+          }
+        ]
+      }
+    },
+    "linuxConfiguration_password": { },
+    "linuxConfiguration": "[variables(concat('linuxConfiguration_',parameters('authenticationType')))]",
+    "NodeimageReference": "[variables('computeImages')[parameters('computeNodeImage')]]",
+    "vmssnamingInfix": "[toLower(take(concat(parameters('vmPrefix'), uniqueString(resourceGroup().id)), 9))]",
+    "NodenicName": "[concat(variables('vmssnamingInfix'), 'nic')]",
+    "NodeipConfigName": "[concat(variables('vmssnamingInfix'), 'ipconfig')]",
+    "vmScripts": {
+      "scriptsToDownload": [
+        "https://raw.githubusercontent.com/kddean21/NewCluster/master/finaldeploy.sh"
+      ],
+      "commandToExecute": "[concat('bash finaldeploy.sh',' ', variables('masterBoxName'),' ', parameters('hpcUserName'))]"
+    },
+    "AvailabilitySetSettings": {
+      "name": "ComputeNodeAvailabilitySet",
+      "faultDomainCount": "3",
+      "updateDomainCount": "5"
+    }
+  },  
+  "resources": [
+    {
+        "type": "Microsoft.Compute/virtualMachineScaleSets",
+        "name": "[parameters('vmPrefix')]",
+        "location": "[resourceGroup().location]",
+        "apiVersion": "2016-04-30-preview",
+        "sku": {
+          "name": "[parameters('CompNodeVMsku')]",
+          "tier": "Standard",
+          "capacity": "[parameters('computeNodeCount')]"
+        },
+        "dependsOn": [
+        ],
+        "properties": {
+          "overprovision": "false",
+          "upgradePolicy": {
+            "mode": "Manual"
+          },
+          "virtualMachineProfile": {
+            "networkProfile": {
+              "networkInterfaceConfigurations": [
+                {
+                  "name": "[variables('NodenicName')]",
+                  "properties": {
+                    "primary": "true",
+                    "ipConfigurations": [
+                      {
+                        "name": "[variables('NodeipConfigName')]",
+                        "properties": {
+                          "subnet": {
+                              "id": "[variables('SubnetRef')]"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "osProfile": {
+              "computerNamePrefix": "[variables('vmssnamingInfix')]",
+              "adminUsername": "[parameters('adminUserName')]",
+              "adminPassword": "[parameters('adminPassword')]",
+              "linuxConfiguration": "[variables('linuxConfiguration')]"
+            },
+            "storageProfile": {
+              "imageReference": "[variables('NodeimageReference')]",  
+              "osDisk": {
+                "caching": "ReadOnly",
+                "createOption": "FromImage",
+                "managedDisk": {
+                  "storageAccountType": "Standard_LRS"
+               }
+              }
+            },
+            "extensionProfile": {
+              "extensions": [
+                {
+                  "name": "installCN",
+                  "properties": {
+                    "publisher": "Microsoft.Azure.Extensions",
+                    "type": "CustomScript",
+                    "typeHandlerVersion": "2.0",
+                    "autoUpgradeMinorVersion": true,
+                    "settings": {
+                      "fileUris": "[variables('vmScripts').scriptsToDownload]",
+                      "commandToExecute": "[variables('vmScripts').commandToExecute]"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+  
+  
+  
+  
+
