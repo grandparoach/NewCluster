@@ -4,6 +4,7 @@
   "parameters": {
     "vmPrefix": {
       "type": "string",
+      "defaultValue": "cfd",
       "metadata": {
         "description": "Base string for naming resources (max length of 8)"
       },
@@ -110,32 +111,32 @@
     },
     "existingVNetName": {
       "type": "string",
-      "defaultValue": "ARMHPCVNet",
+      "defaultValue": "cfdvnet",
       "metadata": {
         "description": "name of existing Virtual Network"
       }
     },
     "existingVNetResourceGroup": {
       "type": "string",
-       "defaultValue": "ARMHPC",
+       "defaultValue": "CFDtransfer",
       "metadata": {
         "description": "name of Resource Group for existing Virtual Network"
       }
     },
     "existingSubnetName": {
       "type": "string",
-      "defaultValue": "Subnet-2",
+      "defaultValue": "subnet1",
       "metadata": {
-        "description": "name of existing Virtual Network"
+        "description": "name of existing Subnet"
       }
     },
     "hpcUserName": {
         "type": "string",
         "defaultValue": "hpc"
     },
-    "masterBoxName": {
+    "masterHostName": {
         "type": "string",
-        "defaultValue": "transfermaster"
+        "defaultValue": "transfercfdvm"
     }    
   
   },
@@ -203,7 +204,7 @@
       "scriptsToDownload": [
         "https://raw.githubusercontent.com/kddean21/NewCluster/master/finaldeploy.sh"
       ],
-      "commandToExecute": "[concat('bash finaldeploy.sh',' ', variables('masterBoxName'),' ', parameters('hpcUserName'))]"
+      "commandToExecute": "[concat('bash finaldeploy.sh',' ', parameters('masterHostName'),' ', parameters('hpcUserName'))]"
     },
     "AvailabilitySetSettings": {
       "name": "ComputeNodeAvailabilitySet",
@@ -290,6 +291,10 @@
   }
   
   
+  
+  
+
+
   
   
 
