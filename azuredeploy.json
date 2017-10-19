@@ -132,14 +132,17 @@
     "hpcUserName": {
         "type": "string",
         "defaultValue": "hpc"
-    }
+    },
+    "masterBoxName": {
+        "type": "string",
+        "defaultValue": "transfermaster"
+    }    
   
   },
   "variables": {
     "longNamingInfix": "[toLower(parameters('vmPrefix'))]",
     "vnetID": "[resourceId(parameters('existingVNetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('existingVNetName'))]",
     "SubnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('existingSubnetName'))]",
-    "masterBoxName": "[concat(variables('longNamingInfix'), 'master')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "computeImages": {
       "CentOS_6.7": {
