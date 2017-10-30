@@ -217,7 +217,7 @@
     "NodeipConfigName": "[concat(variables('vmssnamingInfix'), 'ipconfig')]",
     "vmScripts": {
       "scriptsToDownload": [
-        "https://raw.githubusercontent.com/kddean21/NewCluster/master/finaldeploy.sh"
+        "https://raw.githubusercontent.com/kddean21/NewCluster/CustomImage/finaldeploy.sh"
       ],
       "commandToExecute": "[concat('bash finaldeploy.sh',' ', parameters('masterHostName'),' ', parameters('hpcUserName'))]"
     },
