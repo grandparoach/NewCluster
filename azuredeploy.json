@@ -4,13 +4,12 @@
   "parameters": {
     "vmPrefix": {
       "type": "string",
-      "defaultValue": "cfd",
+      "defaultValue": "",
       "metadata": {
         "description": "Base string for naming resources (max length of 8)"
       },
       "maxLength": 8
     },
-    
     "CompNodeVMsku": {
       "type": "string",
       "defaultValue": "Standard_H16r",
@@ -130,13 +129,28 @@
         "description": "name of existing Subnet"
       }
     },
+    "existingManagedImageResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Resource Group containing the Image that instances of the VM Scale Set will be created from. Images can be created by capturing Azure VMs."
+      }
+    },
+    "existingManagedImageName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Image that instances of the VM Scale Set will be created from. Images can be created by capturing Azure VMs."
+      }
+    },
     "hpcUserName": {
         "type": "string",
         "defaultValue": "hpc"
     },
     "masterHostName": {
         "type": "string",
-        "defaultValue": "transfercfdvm"
+        "defaultValue": "",
+        "metadata": {
+            "description": "The name of the VM which is serving as the NFS Server."
+          }
     }    
   
   },
@@ -144,6 +158,7 @@
     "longNamingInfix": "[toLower(parameters('vmPrefix'))]",
     "vnetID": "[resourceId(parameters('existingVNetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('existingVNetName'))]",
     "SubnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('existingSubnetName'))]",
+    "managedImageId": "[resourceId(parameters('existingManagedImageResourceGroup'), 'Microsoft.Compute/images', parameters('existingManagedImageName'))]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
     "computeImages": {
       "CentOS_6.7": {
@@ -258,7 +273,9 @@
               "linuxConfiguration": "[variables('linuxConfiguration')]"
             },
             "storageProfile": {
-              "imageReference": "[variables('NodeimageReference')]",  
+              "imageReference": {
+                "id": "[variables('managedImageId')]"
+              }, 
               "osDisk": {
                 "caching": "ReadOnly",
                 "createOption": "FromImage",
