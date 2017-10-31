@@ -1,5 +1,5 @@
 # NewCluster
-Spin up a cluster of compute nodes with an existing NFS Server and VNet
+Spin up a cluster of compute nodes with an existing NFS Server and VNet based off of a customized managed disk image.
 Leverages NFS Template
 
 
