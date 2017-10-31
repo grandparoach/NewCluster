@@ -55,20 +55,6 @@
         "description": "Instance type to use for the compute nodes"
       }
     },
-    "computeNodeImage": {
-      "type": "string",
-      "defaultValue": "CentOS-HPC_7.1",
-      "allowedValues": [
-        "CentOS_6.7",
-        "CentOS_7.2",
-        "CentOS-HPC_7.1",
-        "CentOS-HPC_7.3",
-        "RHEL_7.2"
-      ],
-      "metadata": {
-        "description": "The VM image of the compute nodes"
-      }
-    },
     "computeNodeCount": {
       "type": "int",
       "metadata": {
@@ -143,7 +129,7 @@
     },
     "hpcUserName": {
         "type": "string",
-        "defaultValue": "hpc"
+        "defaultValue": "hpcuser"
     },
     "masterHostName": {
         "type": "string",
@@ -155,49 +141,10 @@
   
   },
   "variables": {
-    "longNamingInfix": "[toLower(parameters('vmPrefix'))]",
     "vnetID": "[resourceId(parameters('existingVNetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('existingVNetName'))]",
     "SubnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('existingSubnetName'))]",
     "managedImageId": "[resourceId(parameters('existingManagedImageResourceGroup'), 'Microsoft.Compute/images', parameters('existingManagedImageName'))]",
     "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
-    "computeImages": {
-      "CentOS_6.7": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "6.7",
-        "version": "latest"
-      },
-      "CentOS_7.2": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.2",
-        "version": "latest"
-      },
-      "CentOS_7.3": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS",
-        "sku": "7.3",
-        "version": "latest"
-      },
-      "CentOS-HPC_7.1": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7.1",
-        "version": "latest"
-      },
-      "CentOS-HPC_7.3": {
-        "publisher": "OpenLogic",
-        "offer": "CentOS-HPC",
-        "sku": "7.3",
-        "version": "latest"
-      },
-      "RHEL_7.2": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7.2",
-        "version": "latest"
-      }
-    },
     "linuxConfiguration_sshPublicKey": {
       "disablePasswordAuthentication": "true",
       "ssh": {
@@ -211,7 +158,6 @@
     },
     "linuxConfiguration_password": { },
     "linuxConfiguration": "[variables(concat('linuxConfiguration_',parameters('authenticationType')))]",
-    "NodeimageReference": "[variables('computeImages')[parameters('computeNodeImage')]]",
     "vmssnamingInfix": "[toLower(take(concat(parameters('vmPrefix'), uniqueString(resourceGroup().id)), 9))]",
     "NodenicName": "[concat(variables('vmssnamingInfix'), 'nic')]",
     "NodeipConfigName": "[concat(variables('vmssnamingInfix'), 'ipconfig')]",
@@ -220,11 +166,6 @@
         "https://raw.githubusercontent.com/grandparoach/NewCluster/CustomImage/finaldeploy.sh"
       ],
       "commandToExecute": "[concat('bash finaldeploy.sh',' ', parameters('masterHostName'),' ', parameters('hpcUserName'))]"
-    },
-    "AvailabilitySetSettings": {
-      "name": "ComputeNodeAvailabilitySet",
-      "faultDomainCount": "3",
-      "updateDomainCount": "5"
     }
   },  
   "resources": [
@@ -306,7 +247,6 @@
       }
     ]
   }
-  
   
   
   
