@@ -110,21 +110,21 @@
     },
     "existingVNetName": {
       "type": "string",
-      "defaultValue": "cfdvnet",
+      "defaultValue": "",
       "metadata": {
         "description": "name of existing Virtual Network"
       }
     },
     "existingVNetResourceGroup": {
       "type": "string",
-       "defaultValue": "CFDtransfer",
+       "defaultValue": "",
       "metadata": {
         "description": "name of Resource Group for existing Virtual Network"
       }
     },
     "existingSubnetName": {
       "type": "string",
-      "defaultValue": "subnet1",
+      "defaultValue": "",
       "metadata": {
         "description": "name of existing Subnet"
       }
